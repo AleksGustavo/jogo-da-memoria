@@ -1,6 +1,6 @@
 package com.aleksandergustavo.jogo_da_memoria.ui.viewmodel
-import Card
 import MemoryGame
+import com.aleksandergustavo.jogo_da_memoria.model.Card
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aleksandergustavo.jogo_da_memoria.R

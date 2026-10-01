@@ -1,4 +1,4 @@
-import kotlin.collections.get
+import com.aleksandergustavo.jogo_da_memoria.model.Card
 
 class MemoryGame(private val images: List<Int>) {
     var cards: List<Card> = emptyList()

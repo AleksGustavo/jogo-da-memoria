@@ -1,3 +1,5 @@
+package com.aleksandergustavo.jogo_da_memoria.model
+
 data class Card (
     val id: Int, // Identificador único para cada carta
     val imageResId: Int, // ID para cada imagem
