@@ -15,7 +15,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.QuestionMark
-import androidx.compose.material3.Card
+import androidx.compose.material3.Card // O componente visual do Compose
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
@@ -32,15 +32,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.aleksandergustavo.jogo_da_memoria.R
-import com.aleksandergustavo.jogo_da_memoria.model.MemoryCardUi
 import com.aleksandergustavo.jogo_da_memoria.ui.theme.Purple
+import com.aleksandergustavo.jogo_da_memoria.model.Card as ModelCard
 
-/** Proporção 2:3 — a mesma das artes das cartas, para exibi-las por inteiro (sem cortes). */
 private const val CardAspectRatio = 2f / 3f
 
 @Composable
 fun MemoryCard(
-    card: MemoryCardUi,
+    card: ModelCard, // Passa a usar o apelido aqui
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     accentColor: Color = Purple
@@ -77,8 +76,8 @@ fun MemoryCard(
         ) {
             if (visible) {
                 Image(
-                    painter = painterResource(card.imageRes),
-                    contentDescription = card.label,
+                    painter = painterResource(card.imageResId),
+                    contentDescription = null, // Removido o card.label que causava o erro
                     modifier = Modifier
                         .fillMaxSize()
                         .clip(RoundedCornerShape(16.dp)),
@@ -132,7 +131,8 @@ fun MemoryCard(
 @Composable
 private fun PreviewCardBack() {
     MemoryCard(
-        card = MemoryCardUi(id = 1, pairId = 1, label = "Macaco", imageRes = R.drawable.monkey),
+        // Parâmetros limpos, usando apenas os existentes na nossa data class
+        card = ModelCard(id = 1, imageResId = R.drawable.monkey),
         onClick = {}
     )
 }
@@ -141,11 +141,10 @@ private fun PreviewCardBack() {
 @Composable
 private fun PreviewCardFront() {
     MemoryCard(
-        card = MemoryCardUi(
+        // Parâmetros limpos, usando apenas os existentes na nossa data class
+        card = ModelCard(
             id = 1,
-            pairId = 1,
-            label = "Macaco",
-            imageRes = R.drawable.monkey,
+            imageResId = R.drawable.monkey,
             isFlipped = true
         ),
         onClick = {}

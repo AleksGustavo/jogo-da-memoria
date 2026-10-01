@@ -1,5 +1,8 @@
 package com.aleksandergustavo.jogo_da_memoria.ui.screens
 
+import com.aleksandergustavo.jogo_da_memoria.model.Card
+import androidx.compose.foundation.lazy.grid.items
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -20,7 +23,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
@@ -28,65 +30,42 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.aleksandergustavo.jogo_da_memoria.data.FakeGameData
 import com.aleksandergustavo.jogo_da_memoria.model.GameCategory
 import com.aleksandergustavo.jogo_da_memoria.ui.components.GameHeader
 import com.aleksandergustavo.jogo_da_memoria.ui.components.MemoryCard
 import com.aleksandergustavo.jogo_da_memoria.ui.theme.MemoryGameTheme
 import kotlinx.coroutines.delay
+import androidx.compose.runtime.collectAsState
+import com.aleksandergustavo.jogo_da_memoria.ui.viewmodel.GameViewModel
 
-/** Largura : altura das cartas (mesma proporção das artes, 2:3). */
+
+/** Largura: altura das cartas (mesma proporção das artes, 2:3). */
 private const val CardAspectRatio = 2f / 3f
 
 @Composable
-fun GameScreen(category: GameCategory, onBack: () -> Unit, onVictory: (Int) -> Unit) {
-    var cards by remember(category) { mutableStateOf(FakeGameData.cards(category)) }
-    var attempts by remember(category) { mutableIntStateOf(0) }
-    var locked by remember(category) { mutableStateOf(false) }
-    var victorySent by remember(category) { mutableStateOf(false) }
+fun GameScreen(
+    category: GameCategory,
+    onBack: () -> Unit,
+    onVictory: (Int) -> Unit,
+    viewModel: GameViewModel = viewModel() // 1. Injeta o ViewModel aqui
+) {
+    // 2. Observa os estados gerenciados pela sua regra de negócio
+    val cards by viewModel.cards.collectAsState()
+    val attempts by viewModel.attempts.collectAsState()
+    val isGameOver by viewModel.isGameOver.collectAsState()
 
-    fun restart() {
-        cards = FakeGameData.cards(category)
-        attempts = 0
-        locked = false
-        victorySent = false
+    LaunchedEffect(Unit) {
+        viewModel.restartGame(category)
     }
 
-    fun choose(id: Int) {
-        if (locked) return
-        val selected = cards.firstOrNull { it.id == id } ?: return
-        if (selected.isFlipped || selected.isMatched) return
-        cards = cards.map { if (it.id == id) it.copy(isFlipped = true) else it }
-        if (cards.count { it.isFlipped && !it.isMatched } == 2) {
-            attempts++
-            locked = true
-        }
-    }
-
-    LaunchedEffect(cards, locked) {
-        if (locked) {
-            val open = cards.filter { it.isFlipped && !it.isMatched }
-            if (open.size == 2) {
-                delay(650)
-                cards = if (open[0].pairId == open[1].pairId) {
-                    cards.map { if (it.pairId == open[0].pairId) it.copy(isMatched = true) else it }
-                } else {
-                    cards.map { if (it.id == open[0].id || it.id == open[1].id) it.copy(isFlipped = false) else it }
-                }
-                locked = false
-            }
-        }
-        if (!victorySent && cards.isNotEmpty() && cards.all { it.isMatched }) {
-            victorySent = true
-            delay(450)
+    // 3. Efeito enxuto: Apenas reage ao fim do jogo para trocar de tela
+    LaunchedEffect(isGameOver) {
+        if (isGameOver) {
+            delay(450) // Mantém o pequeno delay original para o usuário ver o último par formado
             onVictory(attempts)
         }
     }
@@ -104,7 +83,14 @@ fun GameScreen(category: GameCategory, onBack: () -> Unit, onVictory: (Int) -> U
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 14.dp, vertical = 12.dp)
         ) {
-            GameHeader(category, attempts, onBack, ::restart)
+            // 4. Conecta o Header aos dados e ações do ViewModel
+            GameHeader(
+                category = category,
+                attempts = attempts,
+                onBack = onBack,
+                onRestart = { viewModel.restartGame(category) }
+            )
+
             Spacer(Modifier.height(14.dp))
             Surface(
                 shape = RoundedCornerShape(26.dp),
@@ -131,7 +117,8 @@ fun GameScreen(category: GameCategory, onBack: () -> Unit, onVictory: (Int) -> U
                             items(cards, key = { it.id }) { card ->
                                 MemoryCard(
                                     card = card,
-                                    onClick = { choose(card.id) },
+                                    // 5. O clique na carta agora aciona o método do seu backend
+                                    onClick = { viewModel.onCardClicked(card.id) },
                                     modifier = Modifier.fillMaxWidth(),
                                     accentColor = category.color
                                 )
