@@ -59,7 +59,7 @@ fun GameScreen(
     val isGameOver by viewModel.isGameOver.collectAsState()
 
     LaunchedEffect(Unit) {
-        viewModel.restartGame()
+        viewModel.restartGame(category)
     }
 
     // 3. Efeito enxuto: Apenas reage ao fim do jogo para trocar de tela
@@ -88,7 +88,7 @@ fun GameScreen(
                 category = category,
                 attempts = attempts,
                 onBack = onBack,
-                onRestart = { viewModel.restartGame() }
+                onRestart = { viewModel.restartGame(category) }
             )
 
             Spacer(Modifier.height(14.dp))

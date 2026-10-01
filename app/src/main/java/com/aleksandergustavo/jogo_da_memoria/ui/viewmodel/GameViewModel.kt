@@ -1,4 +1,5 @@
 package com.aleksandergustavo.jogo_da_memoria.ui.viewmodel
+import com.aleksandergustavo.jogo_da_memoria.model.GameCategory
 import MemoryGame
 import com.aleksandergustavo.jogo_da_memoria.model.Card
 import androidx.lifecycle.ViewModel
@@ -11,50 +12,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 class GameViewModel: ViewModel() {
-    private val imageList = listOf(
-        R.drawable.acerola,
-        R.drawable.apple,
-        R.drawable.armadillo,
-        R.drawable.avocado,
-        R.drawable.backpack,
-        R.drawable.banana,
-        R.drawable.bicycle,
-        R.drawable.camera,
-        R.drawable.cherry,
-        R.drawable.clock,
-        R.drawable.compass,
-        R.drawable.dolphin,
-        R.drawable.elephant,
-        R.drawable.flamingo,
-        R.drawable.grape,
-        R.drawable.kiwi,
-        R.drawable.lamp,
-        R.drawable.lighthouse,
-        R.drawable.lime,
-        R.drawable.lion,
-        R.drawable.monkey,
-        R.drawable.orange,
-        R.drawable.papaya,
-        R.drawable.parrot,
-        R.drawable.peach,
-        R.drawable.penguin,
-        R.drawable.phone,
-        R.drawable.pineapple,
-        R.drawable.pomegranate,
-        R.drawable.safe,
-        R.drawable.ship,
-        R.drawable.sloth,
-        R.drawable.spyglass,
-        R.drawable.strawberry,
-        R.drawable.telescope,
-        R.drawable.television,
-        R.drawable.toucan,
-        R.drawable.washing_machine,
-        R.drawable.zebra
-        )
 
     // instanciando a classe
-    private var game = MemoryGame(imageList)
+    private var game = MemoryGame(emptyList())
 
     // estados que o Compose vai observar
     private val _cards = MutableStateFlow(game.cards)
@@ -65,6 +25,41 @@ class GameViewModel: ViewModel() {
 
     private val _isGameOver = MutableStateFlow(game.isGameOver)
     val isGameOver: StateFlow<Boolean> = _isGameOver.asStateFlow()
+
+    private fun getImagesByCategory(category: GameCategory): List<Int> {
+        return when (category) {
+            GameCategory.FRUITS -> listOf(
+                R.drawable.apple,
+                R.drawable.papaya,
+                R.drawable.avocado,
+                R.drawable.banana,
+                R.drawable.cherry,
+                R.drawable.grape,
+                R.drawable.kiwi,
+                R.drawable.lime
+            )
+            GameCategory.ANIMALS -> listOf(
+                R.drawable.armadillo,
+                R.drawable.zebra,
+                R.drawable.parrot,
+                R.drawable.dolphin,
+                R.drawable.elephant,
+                R.drawable.monkey,
+                R.drawable.penguin,
+                R.drawable.lion
+            )
+            GameCategory.OBJECTS -> listOf(
+                R.drawable.washing_machine,
+                R.drawable.telescope,
+                R.drawable.bicycle,
+                R.drawable.backpack,
+                R.drawable.camera,
+                R.drawable.lamp,
+                R.drawable.phone,
+                R.drawable.television
+            )
+        }
+    }
 
     fun onCardClicked(index: Int) {
         if (game.isTouchBlocked) return
@@ -88,8 +83,9 @@ class GameViewModel: ViewModel() {
         }
     }
 
-    fun restartGame() {
-        game = MemoryGame(imageList)
+    fun restartGame(category: GameCategory) {
+        val selectedImages = getImagesByCategory(category)
+        game = MemoryGame(selectedImages)
         updateUiState()
     }
 
