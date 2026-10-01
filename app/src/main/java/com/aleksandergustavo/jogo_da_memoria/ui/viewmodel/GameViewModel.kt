@@ -88,6 +88,11 @@ class GameViewModel: ViewModel() {
         }
     }
 
+    fun restartGame() {
+        game = MemoryGame(imageList)
+        updateUiState()
+    }
+
     private fun updateUiState() {
         _cards.value = game.cards.toList()
         _attempts.value = game.attempts

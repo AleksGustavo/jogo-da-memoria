@@ -40,7 +40,7 @@ private const val CardAspectRatio = 2f / 3f
 
 @Composable
 fun MemoryCard(
-    card: MemoryCardUi,
+    card: Card,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     accentColor: Color = Purple
