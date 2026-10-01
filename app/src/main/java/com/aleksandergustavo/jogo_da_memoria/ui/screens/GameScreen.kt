@@ -43,7 +43,7 @@ import com.aleksandergustavo.jogo_da_memoria.ui.components.MemoryCard
 import com.aleksandergustavo.jogo_da_memoria.ui.theme.MemoryGameTheme
 import kotlinx.coroutines.delay
 
-/** Largura : altura das cartas (mesma proporção das artes, 2:3). */
+/** Largura: altura das cartas (mesma proporção das artes, 2:3). */
 private const val CardAspectRatio = 2f / 3f
 
 @Composable

@@ -62,11 +62,17 @@ class MemoryGame(private val images: List<Int>) {
 
             // 5º Tarefa: Checar o fim da partida
             checkGameOver()
-        } else {
-            // cartas desviradas caso erre o par
-            card1.isFlipped = false
-            card2.isFlipped = false
         }
+    }
+
+    fun resolveTurn() {
+        cards.forEach { card ->
+            if (!card.isMatched) {
+                card.isFlipped = false
+            }
+        }
+
+        isTouchBlocked = false
     }
 
     // 5º Tarefa: Checar o fim da partida
