@@ -94,7 +94,8 @@ class GameViewModel: ViewModel() {
     }
 
     private fun updateUiState() {
-        _cards.value = game.cards.toList()
+        // .map para criar cópias exatas forçando o Compose redesenhar as cartas
+        _cards.value = game.cards.map { it.copy() }
         _attempts.value = game.attempts
         _isGameOver.value = game.isGameOver
     }

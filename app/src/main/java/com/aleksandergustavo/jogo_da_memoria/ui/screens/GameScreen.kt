@@ -58,6 +58,10 @@ fun GameScreen(
     val attempts by viewModel.attempts.collectAsState()
     val isGameOver by viewModel.isGameOver.collectAsState()
 
+    LaunchedEffect(Unit) {
+        viewModel.restartGame()
+    }
+
     // 3. Efeito enxuto: Apenas reage ao fim do jogo para trocar de tela
     LaunchedEffect(isGameOver) {
         if (isGameOver) {
