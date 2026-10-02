@@ -40,10 +40,18 @@ import com.aleksandergustavo.jogo_da_memoria.ui.theme.MemoryGameTheme
 import com.aleksandergustavo.jogo_da_memoria.ui.theme.Yellow
 
 @Composable
-fun VictoryScreen(attempts: Int, onReplay: () -> Unit, onCategories: () -> Unit, onHome: () -> Unit) {
+fun VictoryScreen(
+    attempts: Int,
+    timeSeconds: Int,
+    onReplay: () -> Unit,
+    onCategories: () -> Unit,
+    onHome: () -> Unit
+) {
     var start by remember { mutableStateOf(false) }
     val scale by animateFloatAsState(if (start) 1f else .55f, spring(), label = "victory")
     LaunchedEffect(Unit) { start = true }
+    val minutes = (timeSeconds / 60).toString().padStart(2, '0')
+    val seconds = (timeSeconds % 60).toString().padStart(2, '0')
 
     Column(
         Modifier
@@ -68,19 +76,51 @@ fun VictoryScreen(attempts: Int, onReplay: () -> Unit, onCategories: () -> Unit,
             )
         }
         Spacer(Modifier.height(16.dp))
-        Text("Parabéns!", style = MaterialTheme.typography.headlineLarge, fontWeight = FontWeight.ExtraBold)
+        Text(
+            "Parabéns!",
+            style = MaterialTheme.typography.headlineLarge,
+            fontWeight = FontWeight.ExtraBold
+        )
         Spacer(Modifier.height(6.dp))
-        Text("Você encontrou todos os pares!", style = MaterialTheme.typography.bodyLarge, textAlign = TextAlign.Center)
+        Text(
+            "Você encontrou todos os pares!",
+            style = MaterialTheme.typography.bodyLarge,
+            textAlign = TextAlign.Center
+        )
         Spacer(Modifier.height(18.dp))
-        Text("Tentativas: $attempts", style = MaterialTheme.typography.titleLarge, color = MaterialTheme.colorScheme.primary)
+        Text(
+            "Tentativas: $attempts",
+            style = MaterialTheme.typography.titleLarge,
+            color = MaterialTheme.colorScheme.primary
+        )
+        Spacer(Modifier.height(8.dp))
+        Text(text = "Tempo total: $minutes:$seconds",
+            style = MaterialTheme.typography.titleLarge,
+            color = Color(0xFFB8702F),
+            fontWeight = FontWeight.Bold
+        )
         Spacer(Modifier.height(30.dp))
-        Button(onClick = onReplay, modifier = Modifier.fillMaxWidth().height(56.dp), shape = RoundedCornerShape(18.dp)) { Text("JOGAR NOVAMENTE") }
+        Button(
+            onClick = onReplay,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp),
+            shape = RoundedCornerShape(18.dp)
+        ) { Text("JOGAR NOVAMENTE") }
         Spacer(Modifier.height(10.dp))
-        OutlinedButton(onClick = onCategories, modifier = Modifier.fillMaxWidth().height(56.dp), shape = RoundedCornerShape(18.dp)) { Text("ESCOLHER OUTRA CATEGORIA") }
+        OutlinedButton(
+            onClick = onCategories,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(56.dp),
+            shape = RoundedCornerShape(18.dp)
+        ) { Text("ESCOLHER OUTRA CATEGORIA") }
         TextButton(onClick = onHome) { Text("VOLTAR AO INÍCIO") }
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-private fun VictoryPreview() { MemoryGameTheme { VictoryScreen(12, {}, {}, {}) } }
+private fun VictoryPreview() {
+    MemoryGameTheme { VictoryScreen(12, 85, {}, {}, onHome = {}) }
+}

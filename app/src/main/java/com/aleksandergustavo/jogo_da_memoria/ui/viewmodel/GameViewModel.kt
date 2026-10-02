@@ -5,10 +5,12 @@ import com.aleksandergustavo.jogo_da_memoria.model.Card
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.aleksandergustavo.jogo_da_memoria.R
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 class GameViewModel: ViewModel() {
@@ -25,6 +27,28 @@ class GameViewModel: ViewModel() {
 
     private val _isGameOver = MutableStateFlow(game.isGameOver)
     val isGameOver: StateFlow<Boolean> = _isGameOver.asStateFlow()
+
+    // Cronômetro
+    private val _timeSeconds = MutableStateFlow(0)
+    val timeSeconds: StateFlow<Int> = _timeSeconds.asStateFlow()
+
+    private var timerJob: Job? = null
+
+    // Inicia o cronômetro
+    private fun startTime() {
+        timerJob?.cancel()
+        timerJob = viewModelScope.launch {
+            while (isActive) {
+                delay(1000)
+                _timeSeconds.value += 1
+            }
+        }
+    }
+
+    // Parar o cronômetro
+    private fun stopTimer() {
+        timerJob?.cancel()
+    }
 
     private fun getImagesByCategory(category: GameCategory): List<Int> {
         return when (category) {
@@ -86,6 +110,8 @@ class GameViewModel: ViewModel() {
     fun restartGame(category: GameCategory) {
         val selectedImages = getImagesByCategory(category)
         game = MemoryGame(selectedImages)
+        _timeSeconds.value = 0
+        startTime()
         updateUiState()
     }
 
@@ -94,5 +120,9 @@ class GameViewModel: ViewModel() {
         _cards.value = game.cards.map { it.copy() }
         _attempts.value = game.attempts
         _isGameOver.value = game.isGameOver
+
+        if(game.isGameOver) {
+            stopTimer()
+        }
     }
 }

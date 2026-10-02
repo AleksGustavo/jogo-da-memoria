@@ -12,6 +12,8 @@ fun AppNavigation() {
     var screen by remember { mutableStateOf(Screen.SPLASH) };
     var category by remember { mutableStateOf(GameCategory.ANIMALS) };
     var attempts by remember { mutableIntStateOf(0) }
+    var timeSeconds by remember { mutableIntStateOf(0) }
+
     BackHandler(enabled = screen != Screen.HOME && screen != Screen.SPLASH) {
         screen = when (screen) {
             Screen.CATEGORY -> Screen.HOME; Screen.GAME -> Screen.CATEGORY; Screen.VICTORY -> Screen.CATEGORY; else -> Screen.HOME
@@ -25,8 +27,14 @@ fun AppNavigation() {
     }; Screen.GAME -> GameScreen(
         category = category,
         onBack = { screen = Screen.CATEGORY },
-        onVictory = { attempts = it; screen = Screen.VICTORY }); Screen.VICTORY -> VictoryScreen(
-        attempts,
+        onVictory = { att, time ->
+            attempts = att
+            timeSeconds = time
+            screen = Screen.VICTORY
+        }
+    );Screen.VICTORY -> VictoryScreen(
+        attempts = attempts,
+        timeSeconds = timeSeconds,
         { screen = Screen.GAME },
         { screen = Screen.CATEGORY },
         { screen = Screen.HOME })
