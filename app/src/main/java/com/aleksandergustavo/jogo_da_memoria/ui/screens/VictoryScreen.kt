@@ -38,6 +38,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.aleksandergustavo.jogo_da_memoria.ui.theme.MemoryGameTheme
 import com.aleksandergustavo.jogo_da_memoria.ui.theme.Yellow
+import androidx.compose.foundation.layout.Row
+import androidx.compose.material.icons.filled.Star
 
 @Composable
 fun VictoryScreen(
@@ -52,6 +54,14 @@ fun VictoryScreen(
     LaunchedEffect(Unit) { start = true }
     val minutes = (timeSeconds / 60).toString().padStart(2, '0')
     val seconds = (timeSeconds % 60).toString().padStart(2, '0')
+
+    // Ganho de estrelas ao finalizar a partida
+    val earnedStars = when {
+        attempts <= 15 -> 3
+        attempts <= 20 -> 2
+        else -> 1
+    }
+
 
     Column(
         Modifier
@@ -75,6 +85,20 @@ fun VictoryScreen(
                 modifier = Modifier.size(52.dp)
             )
         }
+        Spacer(Modifier.height(16.dp))
+        Row(horizontalArrangement = Arrangement.Center) {
+            for (i in 1..3) {
+                Icon(
+                    imageVector = Icons.Filled.Star,
+                    contentDescription = null,
+                    tint = if(i <= earnedStars) Color(0xFFFFC107) else Color(0xFF0E0E0E),
+                    modifier = Modifier
+                        .size(50.dp)
+                        .padding(horizontal = 4.dp)
+                )
+            }
+        }
+
         Spacer(Modifier.height(16.dp))
         Text(
             "Parabéns!",
