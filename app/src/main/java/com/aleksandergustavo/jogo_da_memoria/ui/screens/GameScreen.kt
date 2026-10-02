@@ -21,10 +21,17 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Pause
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -40,6 +47,10 @@ import com.aleksandergustavo.jogo_da_memoria.ui.components.MemoryCard
 import com.aleksandergustavo.jogo_da_memoria.ui.theme.MemoryGameTheme
 import kotlinx.coroutines.delay
 import androidx.compose.runtime.collectAsState
+import androidx.compose.ui.unit.sp
+import com.aleksandergustavo.jogo_da_memoria.ui.theme.Brown
+import com.aleksandergustavo.jogo_da_memoria.ui.theme.Green
+import com.aleksandergustavo.jogo_da_memoria.ui.theme.Purple
 import com.aleksandergustavo.jogo_da_memoria.ui.viewmodel.GameViewModel
 
 
@@ -63,6 +74,7 @@ fun GameScreen(
     val minutes = (timeSeconds / 60).toString().padStart(2, '0')
     val seconds = (timeSeconds % 60).toString().padStart(2, '0')
     val formattedTime = "$minutes:$seconds"
+    val isPaused by viewModel.isPaused.collectAsState()
 
     LaunchedEffect(Unit) {
         viewModel.restartGame(category)
@@ -154,6 +166,20 @@ fun GameScreen(
                 }
             }
             Spacer(Modifier.height(12.dp))
+
+            Button(
+                onClick = { viewModel.toggleTimer() },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(60.dp),
+                shape = RoundedCornerShape(20.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Brown)
+            ) {
+                Icon(Icons.Filled.Pause, contentDescription = null)
+                Spacer(Modifier.width(8.dp))
+                Text(
+                    if(isPaused) "Retomar" else "Pausar", fontWeight = FontWeight.ExtraBold, fontSize = 17.sp)
+            }
         }
     }
 }

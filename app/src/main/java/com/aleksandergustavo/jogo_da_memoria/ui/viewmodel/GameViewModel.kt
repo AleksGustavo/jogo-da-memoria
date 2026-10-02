@@ -15,6 +15,9 @@ import kotlinx.coroutines.launch
 
 class GameViewModel: ViewModel() {
 
+    private val _isPaused = MutableStateFlow(false)
+    val isPaused: StateFlow<Boolean> = _isPaused.asStateFlow()
+
     // instanciando a classe
     private var game = MemoryGame(emptyList())
 
@@ -37,6 +40,7 @@ class GameViewModel: ViewModel() {
     // Inicia o cronômetro
     private fun startTime() {
         timerJob?.cancel()
+        _isPaused.value = false
         timerJob = viewModelScope.launch {
             while (isActive) {
                 delay(1000)
@@ -46,8 +50,18 @@ class GameViewModel: ViewModel() {
     }
 
     // Parar o cronômetro
-    private fun stopTimer() {
+    fun stopTimer() {
         timerJob?.cancel()
+        _isPaused.value = true
+    }
+
+    fun toggleTimer() {
+
+        if (_isPaused.value) {
+            startTime()
+        } else {
+            stopTimer()
+        }
     }
 
     private fun getImagesByCategory(category: GameCategory): List<Int> {
@@ -89,6 +103,7 @@ class GameViewModel: ViewModel() {
         if (game.isTouchBlocked) return
 
         game.chooseCard(index)
+        startTime()
 
         // atualiza a tela imediatamente para mostrar a carta virada
         updateUiState()
@@ -111,7 +126,7 @@ class GameViewModel: ViewModel() {
         val selectedImages = getImagesByCategory(category)
         game = MemoryGame(selectedImages)
         _timeSeconds.value = 0
-        startTime()
+        stopTimer()
         updateUiState()
     }
 
