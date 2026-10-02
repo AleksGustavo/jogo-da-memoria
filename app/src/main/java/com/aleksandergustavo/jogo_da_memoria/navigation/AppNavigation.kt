@@ -22,8 +22,8 @@ fun AppNavigation() {
     when (screen) {
         Screen.SPLASH -> SplashScreen { screen = Screen.HOME }; Screen.HOME -> HomeScreen {
         screen = Screen.CATEGORY
-    }; Screen.CATEGORY -> CategoryScreen {
-        category = it; screen = Screen.GAME
+    }; Screen.CATEGORY -> CategoryScreen(onSelect = {}) {
+        category; screen = Screen.GAME
     }; Screen.GAME -> GameScreen(
         category = category,
         onBack = { screen = Screen.CATEGORY },
