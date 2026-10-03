@@ -5,7 +5,7 @@ Aplicativo Android nativo (Kotlin) de jogo da memória, desenvolvido para a **Av
 - Sem banco de dados, sem internet e sem permissões especiais.
 - Recordes e preferências guardados localmente (`SharedPreferences`).
 
-> **Status:** fase de documentação. O código ainda não foi criado.
+> **Status:** fase de desenvolvimento.
 
 ## Documentação
 
