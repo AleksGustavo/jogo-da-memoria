@@ -1,6 +1,5 @@
 package com.aleksandergustavo.jogo_da_memoria.ui.screens
 
-import com.aleksandergustavo.jogo_da_memoria.model.Card
 import androidx.compose.foundation.lazy.grid.items
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.compose.foundation.BorderStroke
@@ -28,7 +27,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Pause
-import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -49,9 +47,9 @@ import kotlinx.coroutines.delay
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.unit.sp
 import com.aleksandergustavo.jogo_da_memoria.ui.theme.Brown
-import com.aleksandergustavo.jogo_da_memoria.ui.theme.Green
-import com.aleksandergustavo.jogo_da_memoria.ui.theme.Purple
 import com.aleksandergustavo.jogo_da_memoria.ui.viewmodel.GameViewModel
+import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 
 
 /** Largura: altura das cartas (mesma proporção das artes, 2:3). */
@@ -75,6 +73,16 @@ fun GameScreen(
     val seconds = (timeSeconds % 60).toString().padStart(2, '0')
     val formattedTime = "$minutes:$seconds"
     val isPaused by viewModel.isPaused.collectAsState()
+
+    // Vibração ao formar os pares
+    val haptics = LocalHapticFeedback.current
+    val matchedCount = cards.count { it.isMatched }
+
+    LaunchedEffect(matchedCount) {
+        if (matchedCount > 0 ) {
+            haptics.performHapticFeedback(HapticFeedbackType.LongPress)
+        }
+    }
 
     LaunchedEffect(Unit) {
         viewModel.restartGame(category)
